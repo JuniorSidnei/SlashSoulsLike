@@ -52,7 +52,15 @@ void ABarbarousPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	enhancedInputComponent->BindAction(MovementActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Move);
 	enhancedInputComponent->BindAction(CameraLookActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::CameraLook);
-	enhancedInputComponent->BindAction(JumpActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Jump);
+	enhancedInputComponent->BindAction(DodgeActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Dodge);
+}
+
+bool ABarbarousPlayer::GetDodge() const {
+	return m_isDodging;
+}
+
+void ABarbarousPlayer::SetIsDodging(bool value) {
+	m_isDodging = value;
 }
 
 void ABarbarousPlayer::Move(const FInputActionValue& value) {
@@ -81,6 +89,9 @@ void ABarbarousPlayer::CameraLook(const FInputActionValue& value) {
 	AddControllerYawInput(lookAxisVector.X);
 }
 
-void ABarbarousPlayer::Jump() {
-	Super::Jump();
+void ABarbarousPlayer::Dodge() {
+	if(m_isDodging) return;
+
+	m_isDodging = true;
+	//LaunchCharacter(GetActorForwardVector() * 1000, true, true);
 }

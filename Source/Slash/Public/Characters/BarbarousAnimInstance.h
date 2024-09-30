@@ -7,12 +7,12 @@
 UCLASS()
 class SLASH_API UBarbarousAnimInstance : public UAnimInstance {
 	GENERATED_BODY()
-	
+
 public:
 	// Initialize and update
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-
+	
 	// Ref to player
 	UPROPERTY(BlueprintReadOnly)
 	class ABarbarousPlayer* BarbarousPlayer;
