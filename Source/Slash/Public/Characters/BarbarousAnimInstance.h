@@ -2,6 +2,7 @@
 
 #include <CoreMinimal.h>
 #include <Animation/AnimInstance.h>
+#include <Enums/CharacterStates.h>
 #include <BarbarousAnimInstance.generated.h>
 
 UCLASS()
@@ -21,9 +22,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	class UCharacterMovementComponent* BarbarousCharacterMovement;
 
+	// Ground speed
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	float GroundSpeed;
 
+	// Dodge flag
 	UPROPERTY(BlueprintReadWrite, Category = Movement)
 	bool IsDodging;
+
+	// State value
+	UPROPERTY(BlueprintReadOnly, Category = CharacterState)
+	ECharacterState CharacterState;
 };

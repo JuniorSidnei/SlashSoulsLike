@@ -4,8 +4,6 @@
 #include <Animation/AnimNotifies/AnimNotifyState.h>
 #include <BarbarousDodgeNotifyState.generated.h>
 
-class ABarbarousPlayer;
-
 UCLASS()
 class SLASH_API UBarbarousDodgeNotifyState : public UAnimNotifyState {
 	GENERATED_BODY()
@@ -16,5 +14,5 @@ public:
 
 private:
 	UPROPERTY()
-	ABarbarousPlayer* m_barbarousPlayer;
+	class ABarbarousPlayer* m_barbarousPlayer;
 };

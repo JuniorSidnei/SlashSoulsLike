@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "Items.generated.h"
+#include <CoreMinimal.h>
+#include <GameFramework/Actor.h>
+#include <Items.generated.h>
 
 class USphereComponent;
 
@@ -28,18 +28,18 @@ public:
 	float TransformedCos() const;
 
 	UFUNCTION()
-	void OnShpereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult);
+	virtual void OnShpereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult);
 
 	UFUNCTION()
-	void OnShpereEndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+	virtual void OnShpereEndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* mesh;
 	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float m_runningTime;
 	
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* m_mesh;
-
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* m_sphereCollision;
 };

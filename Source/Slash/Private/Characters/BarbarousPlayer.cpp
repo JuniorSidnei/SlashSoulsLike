@@ -5,17 +5,23 @@
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <Weapon/Weapon.h>
 
 ABarbarousPlayer::ABarbarousPlayer() {
 	PrimaryActorTick.bCanEverTick = true;
-	
+
+	// Create camera boom component 
 	m_cameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	// Attach to root component
 	m_cameraBoom->SetupAttachment(GetRootComponent());
 	m_cameraBoom->TargetArmLength = 300.0f;
 
+	// Create view camera component
 	m_viewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
+	// Attach to camera boom
 	m_viewCamera->SetupAttachment(m_cameraBoom);
 
+	// Set values for rotation
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -43,24 +49,18 @@ void ABarbarousPlayer::Tick(float DeltaTime) {
 void ABarbarousPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Bind actions input
-	UEnhancedInputComponent* enhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
+	// Cast the playerInput to enhancedInput
+	auto enhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	
 	if(enhancedInputComponent == nullptr) {
 		return;
 	}  
 
+	// Bind actions input
 	enhancedInputComponent->BindAction(MovementActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Move);
 	enhancedInputComponent->BindAction(CameraLookActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::CameraLook);
 	enhancedInputComponent->BindAction(DodgeActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Dodge);
-}
-
-bool ABarbarousPlayer::GetDodge() const {
-	return m_isDodging;
-}
-
-void ABarbarousPlayer::SetIsDodging(bool value) {
-	m_isDodging = value;
+	enhancedInputComponent->BindAction(EquipActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::EquipWeapon);
 }
 
 void ABarbarousPlayer::Move(const FInputActionValue& value) {
@@ -93,5 +93,17 @@ void ABarbarousPlayer::Dodge() {
 	if(m_isDodging) return;
 
 	m_isDodging = true;
-	//LaunchCharacter(GetActorForwardVector() * 1000, true, true);
+}
+
+void ABarbarousPlayer::EquipWeapon() {
+
+	// Cast the current overlapping item to Weapon class
+	auto overlappingWeapon = Cast<AWeapon>(m_currentOverlappingItem);
+
+	// Validate cast
+	if(overlappingWeapon == nullptr) return;
+
+	// Equip the weapon
+	overlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"));
+	m_currentState = ECharacterState::EquippedOneHandWeapon;
 }
