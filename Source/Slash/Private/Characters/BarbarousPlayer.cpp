@@ -6,20 +6,21 @@
 #include <Camera/CameraComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Weapon/Weapon.h>
+#include <Animation/AnimMontage.h>
 
 ABarbarousPlayer::ABarbarousPlayer() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create camera boom component 
-	m_cameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	// Attach to root component
-	m_cameraBoom->SetupAttachment(GetRootComponent());
-	m_cameraBoom->TargetArmLength = 300.0f;
+	CameraBoom->SetupAttachment(GetRootComponent());
+	CameraBoom->TargetArmLength = 300.0f;
 
 	// Create view camera component
-	m_viewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	// Attach to camera boom
-	m_viewCamera->SetupAttachment(m_cameraBoom);
+	ViewCamera->SetupAttachment(CameraBoom);
 
 	// Set values for rotation
 	bUseControllerRotationPitch = false;
@@ -61,6 +62,7 @@ void ABarbarousPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	enhancedInputComponent->BindAction(CameraLookActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::CameraLook);
 	enhancedInputComponent->BindAction(DodgeActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Dodge);
 	enhancedInputComponent->BindAction(EquipActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::EquipWeapon);
+	enhancedInputComponent->BindAction(AttackActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Attack);
 }
 
 void ABarbarousPlayer::Move(const FInputActionValue& value) {
@@ -101,9 +103,38 @@ void ABarbarousPlayer::EquipWeapon() {
 	auto overlappingWeapon = Cast<AWeapon>(m_currentOverlappingItem);
 
 	// Validate cast
-	if(overlappingWeapon == nullptr) return;
+	if(!overlappingWeapon) return;
 
 	// Equip the weapon
 	overlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"));
 	m_currentState = ECharacterState::EquippedOneHandWeapon;
+}
+
+void ABarbarousPlayer::Attack() {
+	if(CurrentActionState == EAction::Attacking || m_currentState == ECharacterState::Unequipped) {
+		return;
+	}
+	
+	CurrentActionState = EAction::Attacking;
+	
+	auto animInstance = GetMesh()->GetAnimInstance();
+
+	if(!animInstance && !AttackMontage) return;
+
+	animInstance->Montage_Play(AttackMontage);
+
+	FString sectionString = FString::Printf(TEXT("Combo%d"), m_comboIndex);
+	FName sectionName = FName(*sectionString);
+
+	animInstance->Montage_JumpToSection(sectionName);
+}
+
+void ABarbarousPlayer::ComboEnd() {
+	CurrentActionState = EAction::Unoccupied;
+	
+	m_comboIndex += 1;
+	
+	if(m_comboIndex > 4) {
+		m_comboIndex = 1;
+	}
 }

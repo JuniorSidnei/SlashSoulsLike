@@ -11,7 +11,7 @@ class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 class AItems;
-
+class UAnimMontage;
 
 UCLASS()
 class SLASH_API ABarbarousPlayer : public ACharacter {
@@ -33,9 +33,26 @@ public:
 	// Set ovelapping item
 	FORCEINLINE void SetOverlappingItem(AItems* item) { m_currentOverlappingItem = item; }
 
+	// Camera boom component
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* CameraBoom;
+
+	// View camera component
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* ViewCamera;
+
+	// Player attack montage
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* AttackMontage;
+
+	// Current action state of the player
+	UPROPERTY(BlueprintReadWrite, Category = ActionState)
+	EAction CurrentActionState = EAction::Unoccupied;
+	
 protected:
 	virtual void BeginPlay() override;
-	
+
+	// Player input actions
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* BarbarousInputMappingContext;
 
@@ -53,24 +70,23 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* AttackActionInput;
-	
+
+	// Player actions
 	void Move(const FInputActionValue& value);
 	void CameraLook(const FInputActionValue& value);
 	void Dodge();
 	void EquipWeapon();
-	
+	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+	void ComboEnd();
 	
 private:
-	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* m_cameraBoom;
-
-	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* m_viewCamera;
-
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY()
 	AItems* m_currentOverlappingItem;
 
 	ECharacterState m_currentState = ECharacterState::Unequipped;
-	
+
+	uint8_t m_comboIndex = 1;
 	bool m_isDodging;
 };
