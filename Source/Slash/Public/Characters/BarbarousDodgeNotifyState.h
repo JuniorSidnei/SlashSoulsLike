@@ -11,8 +11,4 @@ class SLASH_API UBarbarousDodgeNotifyState : public UAnimNotifyState {
 public:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
-
-private:
-	UPROPERTY()
-	class ABarbarousPlayer* m_barbarousPlayer;
 };

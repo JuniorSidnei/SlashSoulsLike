@@ -12,6 +12,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class AItems;
 class UAnimMontage;
+class AWeapon;
 
 UCLASS()
 class SLASH_API ABarbarousPlayer : public ACharacter {
@@ -87,6 +88,9 @@ private:
 
 	ECharacterState m_currentState = ECharacterState::Unequipped;
 
+	UPROPERTY()
+	AWeapon* m_currentWeapon;
+	
 	uint8_t m_comboIndex = 1;
 	bool m_isDodging;
 };

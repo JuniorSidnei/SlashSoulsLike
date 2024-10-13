@@ -5,6 +5,12 @@
 #include <Items.generated.h>
 
 class USphereComponent;
+class USoundBase;
+
+enum class EITemState {
+	Hovering,
+	Equipped
+};
 
 UCLASS()
 class SLASH_API AItems : public AActor {
@@ -15,7 +21,8 @@ public:
 	float Amplitude;
 
 	UPROPERTY(EditAnywhere)
-	float TimeConstant;
+	float TimeConstant = 1.0f;
+
 	
 	AItems();
 	virtual void Tick(float DeltaTime) override;
@@ -35,11 +42,19 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* mesh;
+
+protected:
+	EITemState ItemState = EITemState::Hovering;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* InteractSound;
+	
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* SphereCollision;
 	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float m_runningTime;
 	
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* m_sphereCollision;
+	
 };

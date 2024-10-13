@@ -100,7 +100,7 @@ void ABarbarousPlayer::Dodge() {
 void ABarbarousPlayer::EquipWeapon() {
 
 	// Cast the current overlapping item to Weapon class
-	auto overlappingWeapon = Cast<AWeapon>(m_currentOverlappingItem);
+	AWeapon* overlappingWeapon = Cast<AWeapon>(m_currentOverlappingItem);
 
 	// Validate cast
 	if(!overlappingWeapon) return;
@@ -108,6 +108,8 @@ void ABarbarousPlayer::EquipWeapon() {
 	// Equip the weapon
 	overlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"));
 	m_currentState = ECharacterState::EquippedOneHandWeapon;
+	m_currentOverlappingItem = nullptr;
+	m_currentWeapon = overlappingWeapon;
 }
 
 void ABarbarousPlayer::Attack() {

@@ -10,16 +10,16 @@ AItems::AItems() {
 	RootComponent = mesh;
 
 	// Create sphere collsion component
-	m_sphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
-	m_sphereCollision->SetupAttachment(GetRootComponent());
+	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
+	SphereCollision->SetupAttachment(GetRootComponent());
 }
 
 void AItems::BeginPlay() {
 	Super::BeginPlay();
 
 	// Bind the actions begin/end overlap
-	m_sphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AItems::OnShpereStartOverlap);
-	m_sphereCollision->OnComponentEndOverlap.AddDynamic(this, &AItems::OnShpereEndOverlap);
+	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AItems::OnShpereStartOverlap);
+	SphereCollision->OnComponentEndOverlap.AddDynamic(this, &AItems::OnShpereEndOverlap);
 }
 
 float AItems::TransformedSin() const {
@@ -60,4 +60,8 @@ void AItems::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 	m_runningTime += DeltaTime;
+
+	if(ItemState != EITemState::Hovering) return;
+	
+	AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
 }
