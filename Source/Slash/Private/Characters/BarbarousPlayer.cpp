@@ -7,6 +7,7 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Weapon/Weapon.h>
 #include <Animation/AnimMontage.h>
+#include <Components/BoxComponent.h>
 
 ABarbarousPlayer::ABarbarousPlayer() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -139,4 +140,11 @@ void ABarbarousPlayer::ComboEnd() {
 	if(m_comboIndex > 4) {
 		m_comboIndex = 1;
 	}
+}
+
+void ABarbarousPlayer::SetCollisionEnabled(ECollisionEnabled::Type enabled) {
+	if(!m_currentWeapon) return;
+
+	m_currentWeapon->BoxCollisionComponent->SetCollisionEnabled(enabled);
+	m_currentWeapon->IgnoreHitActors.Empty();
 }

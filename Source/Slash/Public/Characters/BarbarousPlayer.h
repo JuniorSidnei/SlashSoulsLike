@@ -81,6 +81,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ComboEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void SetCollisionEnabled(ECollisionEnabled::Type enabled);
 	
 private:
 	UPROPERTY()
