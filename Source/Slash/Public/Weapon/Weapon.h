@@ -15,6 +15,9 @@ public:
 	
 	void Equip(USceneComponent* parent, FName socketName);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void CreateFields(const FVector& fieldCenter);
+	
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	UBoxComponent* BoxCollisionComponent;
 
@@ -24,7 +27,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	USceneComponent* BoxTraceEndPosition;
 
-
+	UPROPERTY()
 	TArray<AActor*> IgnoreHitActors;
 	
 protected:

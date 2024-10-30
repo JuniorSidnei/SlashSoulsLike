@@ -63,9 +63,11 @@ void AWeapon::OnShpereEndOverlap(UPrimitiveComponent* overlappedComponent, AActo
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp,
 	int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult) {
 
-	const FVector start = BoxTraceStartPosition->GetComponentLocation();
-	const FVector end = BoxTraceEndPosition->GetComponentLocation();
+	// Set start/end position of box collision to get the impact point
+	const FVector startPos = BoxTraceStartPosition->GetComponentLocation();
+	const FVector endPos = BoxTraceEndPosition->GetComponentLocation();
 
+	// Actors to ignore
 	TArray<AActor*> actorsToIgnore;
 	actorsToIgnore.Add(this);
 
@@ -74,12 +76,13 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* oth
 	}
 	
 	FHitResult hitResult;
-	
+
+	// Box trace to detect point
 	UKismetSystemLibrary::BoxTraceSingle(
 		this,
-		start,
-		end,
-		FVector(10.f, 10.f, 10.f),
+		startPos,
+		endPos,
+		FVector(5.f, 5.f, 5.f),
 		BoxTraceStartPosition->GetComponentRotation(),
 		TraceTypeQuery1,
 		false,
@@ -89,16 +92,23 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* oth
 		true
 	);
 
+	// We didn't hit, just return
 	if(!hitResult.GetActor()) {
 		return;
 	}
 
+	// create fields in impact position
+	CreateFields(hitResult.ImpactPoint);
+	
+	// The hit actor
 	auto* hitActor = Cast<IHitable>(hitResult.GetActor());
 
+	// If isn't a hittable object, just return
 	if(!hitActor) {
 		return;
 	}
 
+	// Call actor hit function
 	hitActor->Hit(hitResult.ImpactPoint);
 	IgnoreHitActors.AddUnique(hitResult.GetActor());
 }
