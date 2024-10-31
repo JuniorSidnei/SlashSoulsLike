@@ -21,7 +21,7 @@ void ABreakable::Tick(float DeltaTime) {
 
 }
 
-void ABreakable::Hit(const FVector& impactPoint) {
+void ABreakable::Hit_Implementation(const FVector& impactPoint) {
 	
 }
 

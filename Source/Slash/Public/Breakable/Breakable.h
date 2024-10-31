@@ -14,11 +14,11 @@ class SLASH_API ABreakable : public AActor, public IHitable {
 public:
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Hit(const FVector& impactPoint) override;
+	virtual void Hit_Implementation(const FVector& impactPoint) override;
 	
 	ABreakable();
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	UGeometryCollectionComponent* GeometryCollection;
 	
 protected:

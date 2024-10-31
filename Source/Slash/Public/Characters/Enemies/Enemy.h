@@ -23,7 +23,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	virtual void Hit(const FVector& impactPoint) override;
+	virtual void Hit_Implementation(const FVector& impactPoint) override;
 	
 	void PlayHitReactMontage();
 };

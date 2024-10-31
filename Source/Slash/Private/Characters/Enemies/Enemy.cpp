@@ -16,7 +16,7 @@ void AEnemy::BeginPlay() {
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 }
 
-void AEnemy::Hit(const FVector& impactPoint) {
+void AEnemy::Hit_Implementation(const FVector& impactPoint) {
 	PlayHitReactMontage();
 }
 
