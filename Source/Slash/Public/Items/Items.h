@@ -6,6 +6,7 @@
 
 class USphereComponent;
 class USoundBase;
+class UNiagaraComponent;
 
 enum class EITemState {
 	Hovering,
@@ -18,11 +19,13 @@ class SLASH_API AItems : public AActor {
 
 public:
 	UPROPERTY(EditAnywhere)
-	float Amplitude;
+	float Amplitude = 1.0f;
 
 	UPROPERTY(EditAnywhere)
 	float TimeConstant = 1.0f;
 
+	UPROPERTY(EditAnywhere)
+	float RotationSpeed = 100.0f;
 	
 	AItems();
 	virtual void Tick(float DeltaTime) override;
@@ -43,6 +46,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* mesh;
 
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* sparkEffect;
+
 protected:
 	EITemState ItemState = EITemState::Hovering;
 
@@ -55,6 +61,4 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float m_runningTime;
-	
-	
 };

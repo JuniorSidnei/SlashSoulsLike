@@ -4,6 +4,7 @@
 #include <Components/BoxComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Interfaces/IHitable.h>
+#include <NiagaraComponent.h>
 
 AWeapon::AWeapon() {
 	// Initialize box collision component and setup collision presets
@@ -48,6 +49,12 @@ void AWeapon::Equip(USceneComponent* parent, FName socketName) {
 	}
 
 	SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if(!sparkEffect) {
+		return;
+	}
+
+	sparkEffect->Deactivate();
 }
 
 void AWeapon::OnShpereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,

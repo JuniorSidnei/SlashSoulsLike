@@ -19,8 +19,14 @@ public:
 	ABreakable();
 
 	UPROPERTY(VisibleAnywhere)
-	UGeometryCollectionComponent* GeometryCollection;
+	UGeometryCollectionComponent* GeometryCollection; 
+
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<class ACollectable>> CollectableItemsList;
 	
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	bool m_isBroken = false;
 };

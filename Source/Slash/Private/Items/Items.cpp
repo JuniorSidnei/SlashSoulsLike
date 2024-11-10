@@ -1,6 +1,7 @@
 #include <Slash/Public/Items/Items.h>
 #include <Components/SphereComponent.h>
-#include <Characters/BarbarousPlayer.h> 
+#include <Characters/BarbarousPlayer.h>
+#include <NiagaraComponent.h>
 
 AItems::AItems() {
 	PrimaryActorTick.bCanEverTick = true; 
@@ -9,9 +10,13 @@ AItems::AItems() {
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = mesh;
 
-	// Create sphere collsion component
+	// Create sphere collision component
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	SphereCollision->SetupAttachment(GetRootComponent());
+
+	// Create the spark effect (niagara) component
+	sparkEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SparkEffect"));
+	sparkEffect->SetupAttachment(GetRootComponent());
 }
 
 void AItems::BeginPlay() {
@@ -62,6 +67,7 @@ void AItems::Tick(float DeltaTime) {
 	m_runningTime += DeltaTime;
 
 	if(ItemState != EITemState::Hovering) return;
-	
+
+	AddActorLocalRotation(FRotator(0.0f, RotationSpeed * DeltaTime, 0.0f));
 	AddActorWorldOffset(FVector(0.f, 0.f, TransformedSin()));
 }

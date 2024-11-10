@@ -6,6 +6,8 @@
 #include <Enemy.generated.h>
 
 class UAnimMontage;
+class UAttributeComponent;
+class UHealthBarWidgetComponent;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitable {
@@ -20,10 +22,16 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* HitReactMontage;
+
+	UPROPERTY(VisibleAnywhere, Category = Attributes)
+	UAttributeComponent* AttributeComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = HUD)
+	UHealthBarWidgetComponent* HealthBarComponent;
 	
 protected:
 	virtual void BeginPlay() override;
 	virtual void Hit_Implementation(const FVector& impactPoint) override;
 	
-	void PlayHitReactMontage();
+	void PlayHitReactMontage() const;
 };

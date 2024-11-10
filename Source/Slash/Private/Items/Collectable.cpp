@@ -16,5 +16,14 @@ void ACollectable::OnShpereStartOverlap(UPrimitiveComponent* overlappedComponent
 	}
 	
 	UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation());
+
+	switch (Type) {
+		case ECollectableType::Soul:
+			break;
+		case ECollectableType::Treasure:
+			break;
+		default: ;
+	}
+	
 	Destroy();
 }
