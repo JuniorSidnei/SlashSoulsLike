@@ -10,11 +10,16 @@ class SLASH_API UAttributeComponent : public UActorComponent {
 	GENERATED_BODY()
 
 public:
+	UAttributeComponent();
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	FORCEINLINE float GetHealthPercent() const { return CurrentHealth / MaxHealth; }
-
-	UAttributeComponent();
+	FORCEINLINE float GetHealthPercent() const { return m_currentHealth / MaxHealth; }
+	FORCEINLINE float GetHealth() const { return m_currentHealth; }
+	FORCEINLINE bool IsAlive() const {return m_currentHealth > 0.f; }
+	
+	void AddHealth(float value);
+	void TakeDamage(float value);
 	
 	UPROPERTY(EditAnywhere, Category = "Attributes")
 	float MaxHealth;
@@ -22,5 +27,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	float CurrentHealth;
+private:
+	float m_currentHealth;
 };

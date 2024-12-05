@@ -7,20 +7,15 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Weapon/Weapon.h>
 #include <Animation/AnimMontage.h>
-#include <Components/BoxComponent.h>
 
 ABarbarousPlayer::ABarbarousPlayer() {
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Create camera boom component 
+	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	// Attach to root component
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->TargetArmLength = 300.0f;
 
-	// Create view camera component
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
-	// Attach to camera boom
 	ViewCamera->SetupAttachment(CameraBoom);
 
 	// Set values for rotation
@@ -41,6 +36,16 @@ void ABarbarousPlayer::BeginPlay() {
 			subSystem->AddMappingContext(BarbarousInputMappingContext, 0);
 		}
 	}
+
+	Tags.Add(FName("Player"));
+}
+
+void ABarbarousPlayer::PlayHitReactMontage() const {
+	Super::PlayHitReactMontage();
+}
+
+void ABarbarousPlayer::PlayDeathMontage() {
+	Super::PlayDeathMontage();
 }
 
 
@@ -50,8 +55,6 @@ void ABarbarousPlayer::Tick(float DeltaTime) {
 
 void ABarbarousPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	// Cast the playerInput to enhancedInput
 	auto enhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	
 	if(enhancedInputComponent == nullptr) {
@@ -67,7 +70,6 @@ void ABarbarousPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 }
 
 void ABarbarousPlayer::Move(const FInputActionValue& value) {
-	// Movement vector from input action
 	const FVector2d movementVector = value.Get<FVector2d>();
 
     // Get controller rotation and create yaw rotation 
@@ -84,10 +86,8 @@ void ABarbarousPlayer::Move(const FInputActionValue& value) {
 }
 
 void ABarbarousPlayer::CameraLook(const FInputActionValue& value) {
-	// Camera movement vector from input action
 	const FVector2d lookAxisVector = value.Get<FVector2d>();
 
-	// Set Pitch and Yaw from mouse movement
 	AddControllerPitchInput(lookAxisVector.Y);
 	AddControllerYawInput(lookAxisVector.X);
 }
@@ -99,15 +99,11 @@ void ABarbarousPlayer::Dodge() {
 }
 
 void ABarbarousPlayer::EquipWeapon() {
-
-	// Cast the current overlapping item to Weapon class
 	AWeapon* overlappingWeapon = Cast<AWeapon>(m_currentOverlappingItem);
 
-	// Validate cast
 	if(!overlappingWeapon) return;
 
-	// Equip the weapon
-	overlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"));
+	overlappingWeapon->Equip(GetMesh(), FName("hand_rSocket"), this, this);
 	m_currentState = ECharacterState::EquippedOneHandWeapon;
 	m_currentOverlappingItem = nullptr;
 	m_currentWeapon = overlappingWeapon;
@@ -132,6 +128,10 @@ void ABarbarousPlayer::Attack() {
 	animInstance->Montage_JumpToSection(sectionName);
 }
 
+void ABarbarousPlayer::Die() {
+	
+}
+
 void ABarbarousPlayer::ComboEnd() {
 	CurrentActionState = EAction::Unoccupied;
 	
@@ -142,9 +142,6 @@ void ABarbarousPlayer::ComboEnd() {
 	}
 }
 
-void ABarbarousPlayer::SetCollisionEnabled(ECollisionEnabled::Type enabled) {
-	if(!m_currentWeapon) return;
-
-	m_currentWeapon->BoxCollisionComponent->SetCollisionEnabled(enabled);
-	m_currentWeapon->IgnoreHitActors.Empty();
+void ABarbarousPlayer::Hit_Implementation(const FVector& impactPoint) {
+	
 }

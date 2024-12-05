@@ -28,7 +28,12 @@ void AWeapon::BeginPlay() {
 	BoxCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxOverlap);
 }
 
-void AWeapon::Equip(USceneComponent* parent, FName socketName) {
+void AWeapon::Equip(USceneComponent* parent, FName socketName, AActor* newOwner, APawn* newInstigator) {
+
+	// Set new owner and instigator of the weapon
+	SetOwner(newOwner);
+	SetInstigator(newInstigator);
+	
 	// Create transform rules
 	FAttachmentTransformRules transformRules(EAttachmentRule::SnapToTarget, false);
 
@@ -110,12 +115,17 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* oth
 	// The hit actor
 	auto* hitActor = Cast<IHitable>(hitResult.GetActor());
 
+	// Add actor to ignore list after hit
+	IgnoreHitActors.AddUnique(hitResult.GetActor());
+	
 	// If isn't a hittable object, just return
 	if(!hitActor) {
 		return;
 	}
 
+	// Deal damage to actor hit
+	UGameplayStatics::ApplyDamage(hitResult.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+
 	// Call actor hit function
 	hitActor->Execute_Hit(hitResult.GetActor(), hitResult.ImpactPoint);
-	IgnoreHitActors.AddUnique(hitResult.GetActor());
 }

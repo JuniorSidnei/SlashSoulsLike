@@ -1,9 +1,9 @@
 #pragma once
 
 #include <CoreMinimal.h>
-#include <GameFramework/Character.h>
 #include <InputActionValue.h>
 #include <Enums/CharacterStates.h>
+#include <Characters/BaseCharacter.h>
 #include <BarbarousPlayer.generated.h>
 
 class UInputMappingContext;
@@ -12,10 +12,10 @@ class USpringArmComponent;
 class UCameraComponent;
 class AItems;
 class UAnimMontage;
-class AWeapon;
+
 
 UCLASS()
-class SLASH_API ABarbarousPlayer : public ACharacter {
+class SLASH_API ABarbarousPlayer : public ABaseCharacter {
 	GENERATED_BODY()
 
 public:
@@ -42,18 +42,12 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
 
-	// Player attack montage
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* AttackMontage;
-
 	// Current action state of the player
 	UPROPERTY(BlueprintReadWrite, Category = ActionState)
 	EAction CurrentActionState = EAction::Unoccupied;
 	
 protected:
-	virtual void BeginPlay() override;
-
-	// Player input actions
+	
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* BarbarousInputMappingContext;
 
@@ -72,27 +66,24 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* AttackActionInput;
 
-	// Player actions
+	virtual void BeginPlay() override;
+	virtual void PlayHitReactMontage() const override;
+	virtual void PlayDeathMontage() override;
+	virtual void Attack() override;
+	virtual void Die() override;
+	virtual void ComboEnd() override;
+	virtual void Hit_Implementation(const FVector& impactPoint) override;
+
 	void Move(const FInputActionValue& value);
 	void CameraLook(const FInputActionValue& value);
 	void Dodge();
 	void EquipWeapon();
-	void Attack();
-
-	UFUNCTION(BlueprintCallable)
-	void ComboEnd();
-
-	UFUNCTION(BlueprintCallable)
-	void SetCollisionEnabled(ECollisionEnabled::Type enabled);
 	
 private:
 	UPROPERTY()
 	AItems* m_currentOverlappingItem;
 
 	ECharacterState m_currentState = ECharacterState::Unequipped;
-
-	UPROPERTY()
-	AWeapon* m_currentWeapon;
 	
 	uint8_t m_comboIndex = 1;
 	bool m_isDodging;

@@ -11,6 +11,6 @@ class SLASH_API UHealthBar : public UUserWidget {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(META = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	UProgressBar* HealthProgressBar;
 };
