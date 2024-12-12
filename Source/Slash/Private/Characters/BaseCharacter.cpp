@@ -47,6 +47,16 @@ void ABaseCharacter::PlayDeathMontage() {
 	animInstance->Montage_Play(DeathMontage);
 }
 
+void ABaseCharacter::PlayAttackMontage() {
+	auto* animInstance = GetMesh()->GetAnimInstance();
+
+	if(!animInstance || !AttackMontage) {
+		return;
+	}
+	
+	animInstance->Montage_Play(AttackMontage);
+}
+
 void ABaseCharacter::Hit_Implementation(const FVector& impactPoint) { }
 
 void ABaseCharacter::Tick(float DeltaTime) {

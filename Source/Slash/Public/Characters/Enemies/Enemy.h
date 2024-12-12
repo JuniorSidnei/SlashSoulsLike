@@ -10,6 +10,7 @@ class UAnimMontage;
 class UHealthBarWidgetComponent;
 class AAIController;
 class UPawnSensingComponent;
+class AWeapon;
 
 UENUM(BlueprintType)
 enum class EEnemyDeathPose : uint8 {
@@ -33,11 +34,6 @@ class SLASH_API AEnemy : public ABaseCharacter {
 	GENERATED_BODY()
 
 public:
-	AEnemy();
-	
-	virtual void Tick(float DeltaTime) override;
-
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(VisibleAnywhere, Category = HUD)
 	UHealthBarWidgetComponent* HealthBarComponent;
@@ -84,13 +80,29 @@ public:
 	float SightRadius = 4000.f;
 
 	UPROPERTY(EditAnywhere, Category = AI)
-	float AttackDistance = 150.f;
+	float AttackDistance = 250.f;
 	
 	UPROPERTY(EditAnywhere, Category = Character)
 	float WalkSpeed = 150.f;
 	
 	UPROPERTY(EditAnywhere, Category = Character)
 	float RunSpeed = 300.f;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	TSubclassOf<AWeapon> Weapon;
+
+	AEnemy();
+	
+	virtual void Tick(float DeltaTime) override;
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	virtual void Destroyed() override;
+
+	virtual void Attack() override;
+
+	virtual void PlayAttackMontage() override;
+	
 
 protected:
 	virtual void BeginPlay() override;

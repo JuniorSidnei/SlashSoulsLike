@@ -7,6 +7,8 @@
 #include <Navigation/PathFollowingComponent.h>
 #include <Components/AttributeComponent.h>
 
+#include "Weapon/Weapon.h"
+
 AEnemy::AEnemy() {
 	PrimaryActorTick.bCanEverTick = true;
 	
@@ -41,6 +43,15 @@ void AEnemy::BeginPlay() {
 	
 	EnemyController = Cast<AAIController>(GetController());
 	MoveToTarget(GetRandoPatrolActor());
+
+	UWorld* world = GetWorld();
+	if(!world || !Weapon) {
+		return;
+	}
+
+	auto weapon = world->SpawnActor<AWeapon>(Weapon);
+	weapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+	m_currentWeapon = weapon;
 }
 
 void AEnemy::Hit_Implementation(const FVector& impactPoint) {
@@ -144,7 +155,7 @@ void AEnemy::PatrolDelayFinished() {
 }
 
 void AEnemy::OnPawnSeen(APawn* pawn) {
-	if(!pawn->ActorHasTag(FName("Player")) || State == EEnemyState::ChasingTarget) {
+	if(!pawn->ActorHasTag(FName("Player")) || State == EEnemyState::Attacking) {
 		 return;
 	}
 
@@ -167,13 +178,13 @@ void AEnemy::UpdateCombat() {
 		State = EEnemyState::Patrolling;
 		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 		MoveToTarget(GetRandoPatrolActor());
-	} else if(IsTargetInRange(Target, SightDistance)) {
+	} else if(!IsTargetInRange(Target, AttackDistance) && State != EEnemyState::ChasingTarget) {
 		State = EEnemyState::ChasingTarget;
 		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 		MoveToTarget(Target);
 	} else if(IsTargetInRange(Target, AttackDistance) && State != EEnemyState::Attacking) {
 		State = EEnemyState::Attacking;
-		UE_LOG(LogTemp, Warning, TEXT("attacking"));
+		Attack();
 	}
 }
 
@@ -208,4 +219,19 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	MoveToTarget(Target);
 	
 	return DamageAmount;
+}
+
+void AEnemy::Destroyed() {
+	if(m_currentWeapon){
+		m_currentWeapon->Destroy();
+	}
+}
+
+void AEnemy::Attack() {
+	Super::Attack();
+	PlayAttackMontage();
+}
+
+void AEnemy::PlayAttackMontage() {
+	Super::PlayAttackMontage();
 }

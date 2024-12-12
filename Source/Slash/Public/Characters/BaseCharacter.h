@@ -42,6 +42,7 @@ protected:
 	virtual void Die();
 	virtual void PlayHitReactMontage() const;
 	virtual void PlayDeathMontage();
+	virtual void PlayAttackMontage();
 
 	virtual void Hit_Implementation(const FVector& impactPoint) override;
 	

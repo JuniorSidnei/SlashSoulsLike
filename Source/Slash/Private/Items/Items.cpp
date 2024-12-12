@@ -5,16 +5,15 @@
 
 AItems::AItems() {
 	PrimaryActorTick.bCanEverTick = true; 
-
-	// Create mesh component 
+	
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = mesh;
-
-	// Create sphere collision component
+	mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	SphereCollision->SetupAttachment(GetRootComponent());
-
-	// Create the spark effect (niagara) component
+	
 	sparkEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SparkEffect"));
 	sparkEffect->SetupAttachment(GetRootComponent());
 }
