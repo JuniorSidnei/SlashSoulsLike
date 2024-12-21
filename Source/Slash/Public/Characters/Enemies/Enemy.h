@@ -14,7 +14,6 @@ class AWeapon;
 
 UENUM(BlueprintType)
 enum class EEnemyDeathPose : uint8 {
-	None,
 	DeadPoseOne,
 	DeadPoseTwo
 };
@@ -26,6 +25,7 @@ enum class EEnemyState : uint8 {
 	Waiting,
 	ChasingTarget,
 	Attacking,
+	Engaged,
 	Dead
 };
 
@@ -39,12 +39,12 @@ public:
 	UHealthBarWidgetComponent* HealthBarComponent;
 
 	UPROPERTY(BlueprintReadOnly, Category = Montages)
-	EEnemyDeathPose EnemyDeathPose = EEnemyDeathPose::None;
+	EEnemyDeathPose EnemyDeathPose;
 
 	UPROPERTY()
 	AActor* Target;
 
-	UPROPERTY(VisibleAnywhere, Category = AI)
+	UPROPERTY(BlueprintReadOnly, Category = AI)
 	EEnemyState State = EEnemyState::Patrolling;
 	
 	UPROPERTY(EditAnywhere, Category = AI)
@@ -61,10 +61,10 @@ public:
 	
 	FTimerHandle PatrolDelayTimer;
 
-	UPROPERTY(VisibleAnywhere, Category = AI)
+	UPROPERTY(EditAnywhere, Category = AI)
 	float MinPatrolDelayTime = 2.f;
 	
-	UPROPERTY(VisibleAnywhere, Category = AI)
+	UPROPERTY(EditAnywhere, Category = AI)
 	float MaxPatrolDelayTime = 4.f;
 
 	UPROPERTY()
@@ -91,25 +91,27 @@ public:
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	TSubclassOf<AWeapon> Weapon;
 
+	FTimerHandle AttackDelayTimer;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float MinAttackDelayTime = 0.5f;
+	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float MaxAttackDelayTime = 1.f;
+	
 	AEnemy();
 	
 	virtual void Tick(float DeltaTime) override;
-
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-
 	virtual void Destroyed() override;
-
 	virtual void Attack() override;
-
-	virtual void PlayAttackMontage() override;
-	
+	virtual void ComboEnd() override;
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void Hit_Implementation(const FVector& impactPoint) override;	
+	virtual void Hit_Implementation(const FVector& impactPoint, AActor* otherActor) override;
+	void PlayDeathMontageSection();
 	virtual void Die() override;
-	virtual void PlayHitReactMontage() const override;
-	virtual void PlayDeathMontage() override;
 	
 	bool IsTargetInRange(const AActor* target, double acceptanceRadius) const;
 	AActor* GetRandoPatrolActor();
@@ -120,4 +122,10 @@ protected:
 	void OnPawnSeen(APawn* pawn);
 
 	void UpdateCombat();
+
+private:
+	void EnableHealthBarComponent(bool enabled) const;
+	void LoseTargetInterest();
+	void ChaseTarget();
+	void AttackTarget();
 };

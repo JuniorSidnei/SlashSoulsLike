@@ -1,5 +1,6 @@
 #include <Characters/BarbarousPlayer.h>
 #include <Components/InputComponent.h>
+#include <Components/StaticMeshComponent.h>
 #include <EnhancedInputComponent.h>
 #include <EnhancedInputSubsystems.h>
 #include <GameFramework/SpringArmComponent.h>
@@ -13,7 +14,7 @@ ABarbarousPlayer::ABarbarousPlayer() {
 	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
-	CameraBoom->TargetArmLength = 300.0f;
+	CameraBoom->TargetArmLength = 600.0f;
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(CameraBoom);
@@ -25,6 +26,12 @@ ABarbarousPlayer::ABarbarousPlayer() {
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
+
+	GetMesh()->SetCollisionObjectType(ECC_WorldDynamic);
+	GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	GetMesh()->SetGenerateOverlapEvents(true);
 }
 
 void ABarbarousPlayer::BeginPlay() {
@@ -39,15 +46,6 @@ void ABarbarousPlayer::BeginPlay() {
 
 	Tags.Add(FName("Player"));
 }
-
-void ABarbarousPlayer::PlayHitReactMontage() const {
-	Super::PlayHitReactMontage();
-}
-
-void ABarbarousPlayer::PlayDeathMontage() {
-	Super::PlayDeathMontage();
-}
-
 
 void ABarbarousPlayer::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
@@ -67,6 +65,10 @@ void ABarbarousPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	enhancedInputComponent->BindAction(DodgeActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Dodge);
 	enhancedInputComponent->BindAction(EquipActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::EquipWeapon);
 	enhancedInputComponent->BindAction(AttackActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Attack);
+}
+
+void ABarbarousPlayer::HitReactEnd() {
+	CurrentActionState = EAction::Unoccupied;
 }
 
 void ABarbarousPlayer::Move(const FInputActionValue& value) {
@@ -110,7 +112,7 @@ void ABarbarousPlayer::EquipWeapon() {
 }
 
 void ABarbarousPlayer::Attack() {
-	if(CurrentActionState == EAction::Attacking || m_currentState == ECharacterState::Unequipped) {
+	if(CurrentActionState != EAction::Unoccupied || m_currentState == ECharacterState::Unequipped) {
 		return;
 	}
 	
@@ -129,7 +131,7 @@ void ABarbarousPlayer::Attack() {
 }
 
 void ABarbarousPlayer::Die() {
-	
+	PlayMontage(DeathMontage);
 }
 
 void ABarbarousPlayer::ComboEnd() {
@@ -137,11 +139,14 @@ void ABarbarousPlayer::ComboEnd() {
 	
 	m_comboIndex += 1;
 	
-	if(m_comboIndex > 4) {
+	if(m_comboIndex > m_maxCombo) {
 		m_comboIndex = 1;
 	}
 }
 
-void ABarbarousPlayer::Hit_Implementation(const FVector& impactPoint) {
-	
+void ABarbarousPlayer::Hit_Implementation(const FVector& impactPoint, AActor* otherActor) {
+	Super::Hit_Implementation(impactPoint, otherActor);
+
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	CurrentActionState = EAction::HitReaction;
 }

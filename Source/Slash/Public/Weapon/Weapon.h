@@ -32,13 +32,16 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	float Damage = 15.f;
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	FVector HitBoxSize = FVector(10.f, 10.f, 10.f);
 	
 protected:
 	virtual void BeginPlay() override;
 	
-	virtual void OnShpereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult) override;
-	virtual void OnShpereEndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex) override;
-
 	UFUNCTION()
 	void OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult);
+	
+private:
+	bool CheckOwnerTag(FName actorTag, const AActor* actorHit) const;
 };

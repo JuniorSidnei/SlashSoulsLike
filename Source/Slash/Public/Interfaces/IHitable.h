@@ -15,5 +15,5 @@ class SLASH_API IHitable {
 	
 public:
 	UFUNCTION(BlueprintNativeEvent)
-	void Hit(const FVector& impactPoint);
+	void Hit(const FVector& impactPoint, AActor* otherActor);
 };

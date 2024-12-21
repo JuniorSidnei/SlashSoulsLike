@@ -13,5 +13,6 @@ enum class EAction : uint8 {
 	Dodging,
 	Death,
 	Healing,
-	Attacking
+	Attacking,
+	HitReaction
 };

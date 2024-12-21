@@ -62,19 +62,13 @@ void AWeapon::Equip(USceneComponent* parent, FName socketName, AActor* newOwner,
 	sparkEffect->Deactivate();
 }
 
-void AWeapon::OnShpereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
-                                   UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult) {
-	Super::OnShpereStartOverlap(overlappedComponent, otherActor, otherComp, otherBodyIndex, bFromSweep, sweepResult);
-}
-
-void AWeapon::OnShpereEndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
-	UPrimitiveComponent* otherComp, int32 otherBodyIndex) {
-	Super::OnShpereEndOverlap(overlappedComponent, otherActor, otherComp, otherBodyIndex);
-}
-
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp,
 	int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult) {
 
+	if(CheckOwnerTag(FName("Enemy"), otherActor)) {
+		return;
+	}
+	
 	// Set start/end position of box collision to get the impact point
 	const FVector startPos = BoxTraceStartPosition->GetComponentLocation();
 	const FVector endPos = BoxTraceEndPosition->GetComponentLocation();
@@ -82,6 +76,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* oth
 	// Actors to ignore
 	TArray<AActor*> actorsToIgnore;
 	actorsToIgnore.Add(this);
+	actorsToIgnore.Add(GetOwner());
 
 	for (AActor* actor : IgnoreHitActors) {
 		actorsToIgnore.AddUnique(actor);
@@ -94,7 +89,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* oth
 		this,
 		startPos,
 		endPos,
-		FVector(5.f, 5.f, 5.f),
+		HitBoxSize,
 		BoxTraceStartPosition->GetComponentRotation(),
 		TraceTypeQuery1,
 		false,
@@ -109,6 +104,10 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* oth
 		return;
 	}
 
+	if(CheckOwnerTag(FName("Enemy"), hitResult.GetActor())) {
+		return;
+	}
+	
 	// create fields in impact position
 	CreateFields(hitResult.ImpactPoint);
 	
@@ -127,5 +126,9 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* overlappedComponent, AActor* oth
 	UGameplayStatics::ApplyDamage(hitResult.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
 
 	// Call actor hit function
-	hitActor->Execute_Hit(hitResult.GetActor(), hitResult.ImpactPoint);
+	hitActor->Execute_Hit(hitResult.GetActor(), hitResult.ImpactPoint, GetOwner());
+}
+
+bool AWeapon::CheckOwnerTag(FName actorTag, const AActor* actorHit) const {
+	return GetOwner()->ActorHasTag(actorTag) && actorHit->ActorHasTag(actorTag);
 }

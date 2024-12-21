@@ -40,11 +40,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void ComboEnd();
 	virtual void Die();
-	virtual void PlayHitReactMontage() const;
-	virtual void PlayDeathMontage();
-	virtual void PlayAttackMontage();
+	virtual void PlayMontage(UAnimMontage* montage) const;
 
-	virtual void Hit_Implementation(const FVector& impactPoint) override;
+	virtual void Hit_Implementation(const FVector& impactPoint, AActor* otherActor) override;
 	
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type enabled);

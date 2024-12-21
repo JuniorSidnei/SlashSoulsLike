@@ -34,15 +34,15 @@ public:
 	// Set ovelapping item
 	FORCEINLINE void SetOverlappingItem(AItems* item) { m_currentOverlappingItem = item; }
 
-	// Camera boom component
+	UFUNCTION(BlueprintCallable)
+	void HitReactEnd();
+	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
-
-	// View camera component
+	
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
-
-	// Current action state of the player
+	
 	UPROPERTY(BlueprintReadWrite, Category = ActionState)
 	EAction CurrentActionState = EAction::Unoccupied;
 	
@@ -67,12 +67,10 @@ protected:
 	UInputAction* AttackActionInput;
 
 	virtual void BeginPlay() override;
-	virtual void PlayHitReactMontage() const override;
-	virtual void PlayDeathMontage() override;
 	virtual void Attack() override;
 	virtual void Die() override;
 	virtual void ComboEnd() override;
-	virtual void Hit_Implementation(const FVector& impactPoint) override;
+	virtual void Hit_Implementation(const FVector& impactPoint, AActor* otherActor) override;
 
 	void Move(const FInputActionValue& value);
 	void CameraLook(const FInputActionValue& value);
@@ -86,5 +84,6 @@ private:
 	ECharacterState m_currentState = ECharacterState::Unequipped;
 	
 	uint8_t m_comboIndex = 1;
+	uint8_t m_maxCombo = 4;
 	bool m_isDodging;
 };
