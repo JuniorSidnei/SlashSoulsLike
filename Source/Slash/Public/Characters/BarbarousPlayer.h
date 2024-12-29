@@ -71,7 +71,7 @@ protected:
 	virtual void Die() override;
 	virtual void ComboEnd() override;
 	virtual void Hit_Implementation(const FVector& impactPoint, AActor* otherActor) override;
-
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void Move(const FInputActionValue& value);
 	void CameraLook(const FInputActionValue& value);
 	void Dodge();

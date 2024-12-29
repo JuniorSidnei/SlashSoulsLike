@@ -1,6 +1,7 @@
 #include <Characters/BarbarousPlayer.h>
 #include <Components/InputComponent.h>
 #include <Components/StaticMeshComponent.h>
+#include <Components/AttributeComponent.h>
 #include <EnhancedInputComponent.h>
 #include <EnhancedInputSubsystems.h>
 #include <GameFramework/SpringArmComponent.h>
@@ -147,6 +148,15 @@ void ABarbarousPlayer::ComboEnd() {
 void ABarbarousPlayer::Hit_Implementation(const FVector& impactPoint, AActor* otherActor) {
 	Super::Hit_Implementation(impactPoint, otherActor);
 
+	StopAttackMontage();
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 	CurrentActionState = EAction::HitReaction;
+}
+
+float ABarbarousPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
+	if(AttributeComponent == nullptr) { return 0.0f; }
+	
+	AttributeComponent->TakeDamage(DamageAmount);
+	
+	return DamageAmount;
 }

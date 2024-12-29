@@ -33,6 +33,16 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type enabled) 
 	m_currentWeapon->IgnoreHitActors.Empty();
 }
 
+void ABaseCharacter::StopAttackMontage() const {
+	auto* animInstance = GetMesh()->GetAnimInstance();
+
+	if(!animInstance || !AttackMontage) {
+		return;
+	}
+
+	animInstance->Montage_Stop(0.1f, AttackMontage);
+}
+
 void ABaseCharacter::PlayMontage(UAnimMontage* montage) const {
 	auto* animInstance = GetMesh()->GetAnimInstance();
 

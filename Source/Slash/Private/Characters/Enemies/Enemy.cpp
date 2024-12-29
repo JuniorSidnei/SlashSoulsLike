@@ -56,7 +56,11 @@ void AEnemy::Hit_Implementation(const FVector& impactPoint, AActor* otherActor) 
 	if(AttributeComponent->IsAlive()) {
 		EnableHealthBarComponent(true);
 	}
+
+	StopAttackMontage();
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetWorldTimerManager().ClearTimer(PatrolDelayTimer);
+	GetWorldTimerManager().ClearTimer(AttackDelayTimer);
 }
 
 void AEnemy::PlayDeathMontageSection() {
@@ -250,4 +254,20 @@ void AEnemy::ComboEnd() {
 	Super::ComboEnd();
 
 	State = EEnemyState::Engaged;
+}
+
+FVector AEnemy::GetTranslationWarpTarget() {
+	if(!Target) { return FVector(); }
+	
+	const auto targetLocation = Target->GetActorLocation();
+	auto targetDist = (GetActorLocation() - targetLocation).GetSafeNormal();
+	targetDist *= WarpTargetDistance;
+
+	return targetLocation + targetDist; 
+}
+
+FVector AEnemy::GetRotationWartTarget() {
+	if(!Target) { return FVector(); }
+
+	return Target->GetActorLocation();
 }

@@ -41,7 +41,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = Montages)
 	EEnemyDeathPose EnemyDeathPose;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	AActor* Target;
 
 	UPROPERTY(BlueprintReadOnly, Category = AI)
@@ -94,10 +94,13 @@ public:
 	FTimerHandle AttackDelayTimer;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
-	float MinAttackDelayTime = 0.5f;
+	float MinAttackDelayTime = 0.25f;
 	
 	UPROPERTY(EditAnywhere, Category = Combat)
-	float MaxAttackDelayTime = 1.f;
+	float MaxAttackDelayTime = 0.6f;
+
+	UPROPERTY(EditAnywhere, Category = AI)
+	double WarpTargetDistance = 75.f;
 	
 	AEnemy();
 	
@@ -106,6 +109,12 @@ public:
 	virtual void Destroyed() override;
 	virtual void Attack() override;
 	virtual void ComboEnd() override;
+	
+	UFUNCTION(BlueprintCallable)
+	FVector GetTranslationWarpTarget();
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetRotationWartTarget();
 
 protected:
 	virtual void BeginPlay() override;

@@ -12,20 +12,15 @@ class SLASH_API ABreakable : public AActor, public IHitable {
 	GENERATED_BODY()
 	
 public:
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void Hit_Implementation(const FVector& impactPoint, AActor* otherActor) override;
-	
 	ABreakable();
+	virtual void Tick(float DeltaTime) override;
+	virtual void Hit_Implementation(const FVector& impactPoint, AActor* otherActor) override;
 
 	UPROPERTY(VisibleAnywhere)
 	UGeometryCollectionComponent* GeometryCollection; 
 
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<class ACollectable>> CollectableItemsList;
-	
-protected:
-	virtual void BeginPlay() override;
 
 private:
 	bool m_isBroken = false;

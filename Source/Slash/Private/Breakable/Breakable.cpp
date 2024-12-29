@@ -11,16 +11,11 @@ ABreakable::ABreakable() {
 	GeometryCollection->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 }
 
-
-void ABreakable::BeginPlay() {
-	Super::BeginPlay();
-}
-
 void ABreakable::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 }
 
-void ABreakable::Hit_Implementation(const FVector& impactPoint) {
+void ABreakable::Hit_Implementation(const FVector& impactPoint, AActor* otherActor) {
 	if(CollectableItemsList.IsEmpty() || m_isBroken) return;
 
 	m_isBroken = true;

@@ -34,17 +34,14 @@ protected:
 	UAttributeComponent* AttributeComponent;
 	
 	virtual void BeginPlay() override;
-
 	virtual void Attack();
-	
 	UFUNCTION(BlueprintCallable)
 	virtual void ComboEnd();
 	virtual void Die();
 	virtual void PlayMontage(UAnimMontage* montage) const;
-
 	virtual void Hit_Implementation(const FVector& impactPoint, AActor* otherActor) override;
-	
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type enabled);
+	void StopAttackMontage() const;
 
 };
