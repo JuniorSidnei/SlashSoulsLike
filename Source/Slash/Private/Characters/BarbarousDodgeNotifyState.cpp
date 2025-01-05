@@ -5,6 +5,4 @@
 void UBarbarousDodgeNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) { }
 
 void UBarbarousDodgeNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) {
-	auto barbarousPlayer = Cast<ABarbarousPlayer>(MeshComp->GetOwner());
-	barbarousPlayer->SetIsDodging(false);
 }

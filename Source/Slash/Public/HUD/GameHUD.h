@@ -10,6 +10,9 @@ UCLASS()
 class SLASH_API AGameHUD : public AHUD {
 	GENERATED_BODY()
 
+public:
+	FORCEINLINE UHUDOverlay* GetHUDOverlay() const { return m_hudWidget; }
+	
 protected:
 	virtual void BeginPlay() override;
 	

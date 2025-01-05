@@ -253,6 +253,11 @@ void AEnemy::Attack() {
 void AEnemy::ComboEnd() {
 	Super::ComboEnd();
 
+	if(Target->ActorHasTag(FName("CharacterDead"))) {
+		LoseTargetInterest();
+		return;
+	}
+	
 	State = EEnemyState::Engaged;
 }
 

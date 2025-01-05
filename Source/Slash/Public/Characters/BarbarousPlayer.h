@@ -6,6 +6,7 @@
 #include <Characters/BaseCharacter.h>
 #include <BarbarousPlayer.generated.h>
 
+class UHUDOverlay;
 class UInputMappingContext;
 class UInputAction;
 class USpringArmComponent;
@@ -23,10 +24,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// Dodge getter/setter
-	FORCEINLINE bool GetDodge() const { return m_isDodging; }
-	FORCEINLINE void SetIsDodging(bool value) {m_isDodging = value; }
-
 	// Character state getter/setter
 	FORCEINLINE ECharacterState GetCurrentState() const { return m_currentState; }
 	FORCEINLINE void SetNewState(ECharacterState newState) { m_currentState = newState; }
@@ -36,6 +33,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HitReactEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void DeathReactEnd();
 	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
@@ -45,7 +45,7 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, Category = ActionState)
 	EAction CurrentActionState = EAction::Unoccupied;
-	
+
 protected:
 	
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -82,6 +82,9 @@ private:
 	AItems* m_currentOverlappingItem;
 
 	ECharacterState m_currentState = ECharacterState::Unequipped;
+
+	UPROPERTY()
+	UHUDOverlay* m_hudOverlay;
 	
 	uint8_t m_comboIndex = 1;
 	uint8_t m_maxCombo = 4;

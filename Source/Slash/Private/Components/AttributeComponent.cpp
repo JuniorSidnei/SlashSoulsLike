@@ -4,12 +4,20 @@ UAttributeComponent::UAttributeComponent() {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UAttributeComponent::AddHealth(float value) {
-	m_currentHealth = FMath::Clamp(m_currentHealth + value, m_currentHealth, MaxHealth); 
+void UAttributeComponent::AddHealth(float amount) {
+	m_currentHealth = FMath::Clamp(m_currentHealth + amount, m_currentHealth, MaxHealth); 
 }
 
-void UAttributeComponent::TakeDamage(float value) {
-	m_currentHealth = FMath::Clamp(m_currentHealth - value, 0.f, MaxHealth);
+void UAttributeComponent::TakeDamage(float amount) {
+	m_currentHealth = FMath::Clamp(m_currentHealth - amount, 0.f, MaxHealth);
+}
+
+void UAttributeComponent::AddStamina(float amount) {
+	m_currentStamina = FMath::Clamp(m_currentStamina + amount, m_currentStamina, MaxStamina);
+}
+
+void UAttributeComponent::TakeStamina(float amount) {
+	m_currentStamina = FMath::Clamp(m_currentStamina - amount, 0, MaxStamina);
 }
 
 void UAttributeComponent::BeginPlay() {

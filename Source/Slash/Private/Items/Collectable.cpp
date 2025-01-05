@@ -2,7 +2,7 @@
 #include <Characters/BarbarousPlayer.h>
 #include <Kismet/GameplayStatics.h>
 
-void ACollectable::OnShpereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
+void ACollectable::OnSphereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
                                         UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult) {
 
 	auto barbarousPlayer = 	Cast<ABarbarousPlayer>(otherActor);

@@ -2,6 +2,13 @@
 #include <Components/ProgressBar.h>
 #include <Components/TextBlock.h>
 
+void UHUDOverlay::Init() const {
+	SetHealthBarPercent(1.f);
+	SetStaminaBarPercent(1.f);
+	SetGold(0);
+	SetSouls(0);
+}
+
 void UHUDOverlay::SetHealthBarPercent(float percent) const {
 	if(!Health_pBar) return;
 
@@ -25,3 +32,5 @@ void UHUDOverlay::SetSouls(int32 newAmount) const {
 
 	SoulCount_txt->SetText(FText::FromString(FString::Printf(TEXT("%d"), newAmount)));
 }
+
+

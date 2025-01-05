@@ -22,8 +22,8 @@ void AItems::BeginPlay() {
 	Super::BeginPlay();
 
 	// Bind the actions begin/end overlap
-	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AItems::OnShpereStartOverlap);
-	SphereCollision->OnComponentEndOverlap.AddDynamic(this, &AItems::OnShpereEndOverlap);
+	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AItems::OnSphereStartOverlap);
+	SphereCollision->OnComponentEndOverlap.AddDynamic(this, &AItems::OnSphereEndOverlap);
 }
 
 float AItems::TransformedSin() const {
@@ -34,7 +34,7 @@ float AItems::TransformedCos() const {
 	return Amplitude * FMath::Cos(m_runningTime * TimeConstant);
 }
 
-void AItems::OnShpereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
+void AItems::OnSphereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult) {
 
 	// Cast the other actor to barbarous player
@@ -47,7 +47,7 @@ void AItems::OnShpereStartOverlap(UPrimitiveComponent* overlappedComponent, AAct
 	barbarousPlayer->SetOverlappingItem(this);
 }
 
-void AItems::OnShpereEndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
+void AItems::OnSphereEndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex) {
 
 	// Cast the other actor to barbarous player

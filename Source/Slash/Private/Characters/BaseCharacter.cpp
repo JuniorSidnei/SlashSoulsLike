@@ -22,8 +22,10 @@ void ABaseCharacter::Attack() { }
 void ABaseCharacter::ComboEnd() { }
 
 void ABaseCharacter::Die() {
+	Tags.Add(FName("CharacterDead"));
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type enabled) {

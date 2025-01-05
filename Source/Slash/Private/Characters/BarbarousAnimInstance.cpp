@@ -22,6 +22,6 @@ void UBarbarousAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
 
 	// Set ground and isFalling variables with correct values
 	GroundSpeed = UKismetMathLibrary::VSizeXY(BarbarousCharacterMovement->Velocity);
-	IsDodging = BarbarousPlayer->GetDodge();
 	CharacterState = BarbarousPlayer->GetCurrentState();
+	ActionState = BarbarousPlayer->CurrentActionState;
 }

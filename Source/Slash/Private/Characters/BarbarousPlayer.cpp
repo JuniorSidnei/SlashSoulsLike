@@ -9,6 +9,10 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Weapon/Weapon.h>
 #include <Animation/AnimMontage.h>
+#include <HUD/GameHUD.h>
+#include <HUD/HUDOverlay.h>
+
+#include "GameFramework/PlayerState.h"
 
 ABarbarousPlayer::ABarbarousPlayer() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -19,8 +23,7 @@ ABarbarousPlayer::ABarbarousPlayer() {
 
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(CameraBoom);
-
-	// Set values for rotation
+	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -38,14 +41,27 @@ ABarbarousPlayer::ABarbarousPlayer() {
 void ABarbarousPlayer::BeginPlay() {
 	Super::BeginPlay();
 
+	Tags.Add(FName("Player"));
+	
 	// Add barbarous mapping context to EnhancedInputSystem
-	if(APlayerController* playerController = Cast<APlayerController>(Controller)) {
-		if(UEnhancedInputLocalPlayerSubsystem* subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer())) {
-			subSystem->AddMappingContext(BarbarousInputMappingContext, 0);
-		}
+	auto playerController = Cast<APlayerController>(Controller);
+	
+	if(!playerController) { return;	}
+
+	if(UEnhancedInputLocalPlayerSubsystem* subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer())) {
+		subSystem->AddMappingContext(BarbarousInputMappingContext, 0);
 	}
 
-	Tags.Add(FName("Player"));
+	auto gameHUD = Cast<AGameHUD>(playerController->GetHUD());
+	
+	if(!gameHUD) { return; }
+
+	m_hudOverlay = gameHUD->GetHUDOverlay();
+
+	if(!m_hudOverlay) { return; }
+	
+	m_hudOverlay->Init();
+	
 }
 
 void ABarbarousPlayer::Tick(float DeltaTime) {
@@ -72,7 +88,15 @@ void ABarbarousPlayer::HitReactEnd() {
 	CurrentActionState = EAction::Unoccupied;
 }
 
+void ABarbarousPlayer::DeathReactEnd() {
+	CurrentActionState = EAction::Death;
+}
+
 void ABarbarousPlayer::Move(const FInputActionValue& value) {
+	if(CurrentActionState != EAction::Unoccupied) {
+		return;
+	}
+	
 	const FVector2d movementVector = value.Get<FVector2d>();
 
     // Get controller rotation and create yaw rotation 
@@ -96,9 +120,12 @@ void ABarbarousPlayer::CameraLook(const FInputActionValue& value) {
 }
 
 void ABarbarousPlayer::Dodge() {
-	if(m_isDodging) return;
-
-	m_isDodging = true;
+	if(CurrentActionState != EAction::Unoccupied) {
+		return;
+	}
+ 
+	UE_LOG(LogTemp, Warning, TEXT("ROLANDO, UUUUUII"));
+	CurrentActionState = EAction::Dodging;
 }
 
 void ABarbarousPlayer::EquipWeapon() {
@@ -132,7 +159,7 @@ void ABarbarousPlayer::Attack() {
 }
 
 void ABarbarousPlayer::Die() {
-	PlayMontage(DeathMontage);
+	GetPlayerState()->DisableInput(Cast<APlayerController>(Controller));
 }
 
 void ABarbarousPlayer::ComboEnd() {
@@ -146,17 +173,24 @@ void ABarbarousPlayer::ComboEnd() {
 }
 
 void ABarbarousPlayer::Hit_Implementation(const FVector& impactPoint, AActor* otherActor) {
+	if(CurrentActionState == EAction::Dodging) { return; }
+	
 	Super::Hit_Implementation(impactPoint, otherActor);
 
 	StopAttackMontage();
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
-	CurrentActionState = EAction::HitReaction;
+
+	if(AttributeComponent->IsAlive()) {
+		CurrentActionState = EAction::HitReaction;
+	}
 }
 
 float ABarbarousPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) {
-	if(AttributeComponent == nullptr) { return 0.0f; }
+	if(AttributeComponent == nullptr || CurrentActionState == EAction::Dodging) { return 0.0f; }
 	
 	AttributeComponent->TakeDamage(DamageAmount);
+
+	m_hudOverlay->SetHealthBarPercent(AttributeComponent->GetHealthPercent());
 	
 	return DamageAmount;
 }

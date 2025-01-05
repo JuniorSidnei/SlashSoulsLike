@@ -26,11 +26,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	float GroundSpeed;
 
-	// Dodge flag
-	UPROPERTY(BlueprintReadWrite, Category = Movement)
-	bool IsDodging;
-
 	// State value
 	UPROPERTY(BlueprintReadOnly, Category = CharacterState)
 	ECharacterState CharacterState;
+	
+	UPROPERTY(BlueprintReadOnly, Category = CharacterState)
+	EAction ActionState;
 };
