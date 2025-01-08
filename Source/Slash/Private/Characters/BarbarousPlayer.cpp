@@ -11,8 +11,10 @@
 #include <Animation/AnimMontage.h>
 #include <HUD/GameHUD.h>
 #include <HUD/HUDOverlay.h>
+#include <GameFramework/PlayerState.h>
 
-#include "GameFramework/PlayerState.h"
+#include "Items/Collectable.h"
+#include "Items/Soul.h"
 
 ABarbarousPlayer::ABarbarousPlayer() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -82,6 +84,20 @@ void ABarbarousPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	enhancedInputComponent->BindAction(DodgeActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Dodge);
 	enhancedInputComponent->BindAction(EquipActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::EquipWeapon);
 	enhancedInputComponent->BindAction(AttackActionInput, ETriggerEvent::Triggered, this, &ABarbarousPlayer::Attack);
+}
+
+void ABarbarousPlayer::SetOverlappingItem(AItems* item) {
+	m_currentOverlappingItem = item;
+}
+
+void ABarbarousPlayer::AddSouls(ASoul* soul) {
+	AttributeComponent->AddSouls(soul->GetRandomSoulAmount());
+	m_hudOverlay->SetSouls(AttributeComponent->GetSoulsAmount());
+}
+
+void ABarbarousPlayer::AddGold(ACollectable* collectable) {
+	AttributeComponent->AddGold(collectable->GetRandomSoulAmount());
+	m_hudOverlay->SetGold(AttributeComponent->GetGoldAmount());
 }
 
 void ABarbarousPlayer::HitReactEnd() {

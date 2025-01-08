@@ -1,6 +1,6 @@
 #include <Slash/Public/Items/Items.h>
 #include <Components/SphereComponent.h>
-#include <Characters/BarbarousPlayer.h>
+#include <Interfaces/Pickable.h>
 #include <NiagaraComponent.h>
 
 AItems::AItems() {
@@ -38,26 +38,26 @@ void AItems::OnSphereStartOverlap(UPrimitiveComponent* overlappedComponent, AAct
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult) {
 
 	// Cast the other actor to barbarous player
-	auto barbarousPlayer = Cast<ABarbarousPlayer>(otherActor);
+	auto pickable = Cast<IPickable>(otherActor);
 
 	// If cast fail, return
-	if(!barbarousPlayer) return;
+	if(!pickable) return;
 
 	// Set the current overlapping item 
-	barbarousPlayer->SetOverlappingItem(this);
+	pickable->SetOverlappingItem(this);
 }
 
 void AItems::OnSphereEndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex) {
 
 	// Cast the other actor to barbarous player
-	auto barbarousPlayer = Cast<ABarbarousPlayer>(otherActor);
+	auto pickable = Cast<IPickable>(otherActor);
 
 	// If cast fail, return
-	if(!barbarousPlayer) return;
+	if(!pickable) return;
 
 	// Set current item to null
-	barbarousPlayer->SetOverlappingItem(nullptr);
+	pickable->SetOverlappingItem(nullptr);
 }
 
 void AItems::Tick(float DeltaTime) {

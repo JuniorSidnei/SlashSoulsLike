@@ -4,6 +4,7 @@
 #include <InputActionValue.h>
 #include <Enums/CharacterStates.h>
 #include <Characters/BaseCharacter.h>
+#include <Interfaces/Pickable.h>
 #include <BarbarousPlayer.generated.h>
 
 class UHUDOverlay;
@@ -12,24 +13,24 @@ class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 class AItems;
+class ASoul;
 class UAnimMontage;
-
+class ACollectable;
 
 UCLASS()
-class SLASH_API ABarbarousPlayer : public ABaseCharacter {
+class SLASH_API ABarbarousPlayer : public ABaseCharacter, public IPickable {
 	GENERATED_BODY()
 
 public:
 	ABarbarousPlayer();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	// Character state getter/setter
+	virtual void SetOverlappingItem(AItems* item) override;
+	virtual void AddSouls(ASoul* soul) override;
+	virtual void AddGold(ACollectable* collectable) override;
+	
 	FORCEINLINE ECharacterState GetCurrentState() const { return m_currentState; }
 	FORCEINLINE void SetNewState(ECharacterState newState) { m_currentState = newState; }
-
-	// Set ovelapping item
-	FORCEINLINE void SetOverlappingItem(AItems* item) { m_currentOverlappingItem = item; }
 
 	UFUNCTION(BlueprintCallable)
 	void HitReactEnd();

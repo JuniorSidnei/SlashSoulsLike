@@ -1,29 +1,30 @@
 #include <Slash/Public/Items/Collectable.h>
-#include <Characters/BarbarousPlayer.h>
 #include <Kismet/GameplayStatics.h>
+#include <Interfaces/Pickable.h>
+#include <NiagaraFunctionLibrary.h>
+
+int32 ACollectable::GetRandomSoulAmount() const {
+	return FMath::RandRange(MinAmount, MaxAmount);
+}
 
 void ACollectable::OnSphereStartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
                                         UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult) {
 
-	auto barbarousPlayer = 	Cast<ABarbarousPlayer>(otherActor);
+	auto pickable = Cast<IPickable>(otherActor);
 
-	if(!barbarousPlayer) {
+	if(!pickable) {
 		return;
 	}
 
-	if(!PickupSound) {
-		return;
+	if(PickupSound) {
+		UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation());
+	}
+
+	if(PickedEffect) {
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PickedEffect, GetActorLocation());
 	}
 	
-	UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation());
-
-	switch (Type) {
-		case ECollectableType::Soul:
-			break;
-		case ECollectableType::Treasure:
-			break;
-		default: ;
-	}
+	pickable->AddGold(this);
 	
 	Destroy();
 }

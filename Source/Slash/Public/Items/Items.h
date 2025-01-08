@@ -7,6 +7,7 @@
 class USphereComponent;
 class USoundBase;
 class UNiagaraComponent;
+class UNiagaraSystem;
 
 enum class EITemState {
 	Hovering,
@@ -57,6 +58,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* SphereCollision;
+
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* PickedEffect;
 	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
