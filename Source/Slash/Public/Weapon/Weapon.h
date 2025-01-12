@@ -35,6 +35,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Weapon)
 	FVector HitBoxSize = FVector(10.f, 10.f, 10.f);
+
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	float StaminaAttackCost = 25.f;
 	
 protected:
 	virtual void BeginPlay() override;

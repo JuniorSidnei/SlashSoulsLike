@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* DeathMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* DodgeMontage;
+
 	UPROPERTY(VisibleAnywhere, Category = Attributes)
 	UAttributeComponent* AttributeComponent;
 	

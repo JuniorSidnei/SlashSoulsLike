@@ -101,6 +101,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = AI)
 	double WarpTargetDistance = 75.f;
+
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<class AItems>> DropItemsList;
 	
 	AEnemy();
 	

@@ -15,7 +15,7 @@ void ACollectable::OnSphereStartOverlap(UPrimitiveComponent* overlappedComponent
 	if(!pickable) {
 		return;
 	}
-
+ 
 	if(PickupSound) {
 		UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation());
 	}

@@ -23,24 +23,33 @@ public:
 	FORCEINLINE void AddSouls(int32 amount) { m_soulAmount += amount; }
 	FORCEINLINE int32 GetGoldAmount() const { return m_goldAmount; }
 	FORCEINLINE int32 GetSoulsAmount() const { return m_soulAmount; }
+	FORCEINLINE bool HasDodgeStamina() const { return m_currentStamina > DodgeStaminaCost; }
 	
 	void AddHealth(float amount);
 	void TakeDamage(float amount);
 	void AddStamina(float amount);
 	void TakeStamina(float amount);
+	void TakeDodgeStamina();
 	
-	UPROPERTY(EditAnywhere, Category = "Attributes")
+
+	UPROPERTY(EditAnywhere, Category = "Attributes") 
+	float StaminaRecoveryAmount;
+	
+	UPROPERTY(EditAnywhere, Category = "Attributes") 
 	float MaxHealth;
 
 	UPROPERTY(EditAnywhere, Category = "Attributes")
 	float MaxStamina;
+	
+	UPROPERTY(EditAnywhere, Category = "Attributes")
+	float DodgeStaminaCost;
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	float m_currentHealth;
-	float m_currentStamina;
+	float m_currentHealth = 0;
+	float m_currentStamina = 0;
 	int32 m_goldAmount = 0;
 	int32 m_soulAmount = 0;
 };

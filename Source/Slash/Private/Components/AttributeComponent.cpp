@@ -20,13 +20,21 @@ void UAttributeComponent::TakeStamina(float amount) {
 	m_currentStamina = FMath::Clamp(m_currentStamina - amount, 0, MaxStamina);
 }
 
+void UAttributeComponent::TakeDodgeStamina() {
+	TakeStamina(DodgeStaminaCost);
+}
+
 void UAttributeComponent::BeginPlay() {
 	Super::BeginPlay();
 
 	m_currentHealth = MaxHealth;
+	m_currentStamina = MaxStamina;
 }
 
 void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	m_currentStamina += DeltaTime * StaminaRecoveryAmount;
+	m_currentStamina = FMath::Clamp(m_currentStamina, 0, MaxStamina);
 }
 

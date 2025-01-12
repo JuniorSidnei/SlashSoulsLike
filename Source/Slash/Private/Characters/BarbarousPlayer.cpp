@@ -12,9 +12,8 @@
 #include <HUD/GameHUD.h>
 #include <HUD/HUDOverlay.h>
 #include <GameFramework/PlayerState.h>
-
-#include "Items/Collectable.h"
-#include "Items/Soul.h"
+#include <Items/Collectable.h>
+#include <Items/Soul.h>
 
 ABarbarousPlayer::ABarbarousPlayer() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -68,6 +67,8 @@ void ABarbarousPlayer::BeginPlay() {
 
 void ABarbarousPlayer::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+
+	m_hudOverlay->SetStaminaBarPercent(AttributeComponent->GetStaminaPercent());
 }
 
 void ABarbarousPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
@@ -133,15 +134,21 @@ void ABarbarousPlayer::CameraLook(const FInputActionValue& value) {
 
 	AddControllerPitchInput(lookAxisVector.Y);
 	AddControllerYawInput(lookAxisVector.X);
-}
+} 
 
 void ABarbarousPlayer::Dodge() {
 	if(CurrentActionState != EAction::Unoccupied) {
 		return;
 	}
- 
-	UE_LOG(LogTemp, Warning, TEXT("ROLANDO, UUUUUII"));
+
+	if(!AttributeComponent->HasDodgeStamina()) {
+		return;
+	}
+
+	
 	CurrentActionState = EAction::Dodging;
+	PlayMontage(DodgeMontage);
+	AttributeComponent->TakeDodgeStamina();
 }
 
 void ABarbarousPlayer::EquipWeapon() {
@@ -159,19 +166,22 @@ void ABarbarousPlayer::Attack() {
 	if(CurrentActionState != EAction::Unoccupied || m_currentState == ECharacterState::Unequipped) {
 		return;
 	}
+
+	if(AttributeComponent->GetStamina() < m_currentWeapon->StaminaAttackCost) {
+		return;
+	}
 	
 	CurrentActionState = EAction::Attacking;
-	
-	auto animInstance = GetMesh()->GetAnimInstance();
 
-	if(!animInstance && !AttackMontage) return;
-
-	animInstance->Montage_Play(AttackMontage);
+	PlayMontage(AttackMontage);
 
 	FString sectionString = FString::Printf(TEXT("Combo%d"), m_comboIndex);
 	FName sectionName = FName(*sectionString);
-
+	
+	auto animInstance = GetMesh()->GetAnimInstance();
 	animInstance->Montage_JumpToSection(sectionName);
+	
+	AttributeComponent->TakeStamina(m_currentWeapon->StaminaAttackCost);
 }
 
 void ABarbarousPlayer::Die() {

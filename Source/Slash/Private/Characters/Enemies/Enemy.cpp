@@ -93,6 +93,11 @@ void AEnemy::Die() {
 	State = EEnemyState::Dead;
 	GetWorldTimerManager().ClearTimer(AttackDelayTimer);
 	EnableHealthBarComponent(false);
+
+	for (auto dropItem : DropItemsList)  {
+		GetWorld()->SpawnActor<AItems>(dropItem, GetActorLocation(), GetActorRotation());	
+	}
+	
 	SetLifeSpan(2.0f); 
 }
 
